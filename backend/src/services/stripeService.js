@@ -22,7 +22,8 @@ class StripeService {
       // 检查是否使用模拟支付或内存模式
       const isMemoryMode = process.env.DB_TYPE === 'memory';
       const useMockPayment = process.env.USE_MOCK_PAYMENT === 'true';
-      const hasValidStripeKey = this.config.secretKey && !this.config.secretKey.includes('YourTestSecretKeyHere');
+      // Treat keys as valid only if they match Stripe key format (sk_live_*/sk_test_*)
+      const hasValidStripeKey = typeof this.config.secretKey === 'string' && /^sk_(live|test)/.test(this.config.secretKey);
 
       if (isMemoryMode || useMockPayment || !hasValidStripeKey) {
         // 返回模拟的支付意图 - 使用正确的Stripe格式
@@ -114,7 +115,7 @@ class StripeService {
       // 检查是否使用模拟支付或内存模式
       const isMemoryMode = process.env.DB_TYPE === 'memory';
       const useMockPayment = process.env.USE_MOCK_PAYMENT === 'true';
-      const hasValidStripeKey = this.config.secretKey && !this.config.secretKey.includes('YourTestSecretKeyHere');
+      const hasValidStripeKey = typeof this.config.secretKey === 'string' && /^sk_(live|test)/.test(this.config.secretKey);
 
       if (isMemoryMode || useMockPayment || !hasValidStripeKey) {
         // 对于模拟支付意图，返回模拟的成功状态
