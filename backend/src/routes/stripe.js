@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
  * Stripe Webhook处理器
  * 处理支付状态更新事件
  */
-router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+router.post('/webhook', async (req, res) => {
   try {
     const signature = req.headers['stripe-signature'];
     const payload = req.body;

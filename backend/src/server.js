@@ -43,6 +43,10 @@ const PORT = process.env.PORT || 8080;
 // Middleware
 app.use(helmet());
 
+// Stripe webhook raw body parser must be registered BEFORE any JSON parser
+// to ensure signature verification receives the unmodified payload
+app.use('/api/stripe/webhook', express.raw({ type: 'application/json' }));
+
 // CORS configuration: allow local dev ports and configurable prod origins
 const baseWhitelist = [
   'http://localhost:3000',
@@ -88,6 +92,7 @@ app.use(cors(corsOptions));
 // Explicitly handle preflight requests
 app.options('*', cors(corsOptions));
 
+// Global parsers (registered AFTER webhook raw parser)
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
@@ -125,6 +130,7 @@ app.use((req, res, next) => {
 });
 
 // Increase request header size limit to prevent 431 errors
+// Keep JSON/urlencoded parsers AFTER webhook raw registration
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb', parameterLimit: 50000 }));
 
